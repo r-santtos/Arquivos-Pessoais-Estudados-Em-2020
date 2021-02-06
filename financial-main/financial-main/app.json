@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Financial",
+    "slug": "Financial",
+    "version": "1.0.3",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "sancompany.financial",
+      "versionCode": 3
+    }
+  }
+}
