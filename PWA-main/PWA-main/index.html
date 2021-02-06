@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWA</title>
+
+    <!-- Essa são as confirações para sistema Apple -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="AC Financeiro" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="apple-touch-icon" href="/icones_pwa/256.png" />
+
+
+    <!-- BUSCA O MANIFEST QUE CONTEM AS CONFIGUÇÃOS PARA A INSTALAÇÃO NO SISTEMA ANDROID -->
+    <link rel="manifest" href="/javascript/manifest.json" />
+
+
+    <!-- FAZ A VERIFICAÇÃO SE É POSSIVEL INSTALAR O PWA NO SISTEMA DO USUÁRIO -->
+    <script>
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          
+            // Busca o o arquivo service worker na raiz do site
+            navigator.serviceWorker.register('/service_worker.js').then(function(registration) {
+
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(err) {
+
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+        }
+    </script>
+</head>
+<body>
+  <main>
+    <h1>PWA</h1>
+  </main>
+</body>
+</html>
