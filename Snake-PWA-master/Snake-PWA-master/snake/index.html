@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content='Famoso game Snake em puro JavaScript e disponivel em PWA' />
+    <meta name="theme-color" content="#000" />
+    <title>Snake Game</title>
+
+    <!-- CODELAB: Add iOS meta tags and icons -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Snake" />
+    <link rel="apple-touch-icon" href="/app/acfinanceiro/view/images/icons/152.png" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="manifest" href="/app/snake/controller/javascript/manifest_snake.json" />
+    <script>
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/app/snake/sw_snake.js').then(function(registration) {
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(err) {
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+        }
+    </script>
+    <style>
+        * {
+            margin: 0%;
+            padding: 0%;
+            border: none;
+            color: #fff;
+            outline: none;
+        }
+        body {
+            box-sizing: border-box;
+            width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            background-color: #000;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .row {
+            flex-direction: row;
+        }
+        .score {
+            height: 40px;
+            border-bottom: 1px solid #fff;
+            margin-bottom: 10px;
+        }
+        canvas {
+            background-color: #000;
+            border: 1px solid #fff;
+        }
+        .btns {
+            max-height: 50vh;
+        }
+        button {
+            min-width: 40px;
+            max-width: 40px;
+            min-height: 40px;
+            max-height: 40px;
+            cursor: pointer;
+            margin: 10px 5px;
+            background-color: #000;
+            border: 1px solid #fff;
+            border-radius: 5px;
+        }
+        .left-right button {
+            margin: 10px 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container score"></div>
+
+    <div class="container">
+        <canvas class="canvas" width="250" height="250"></canvas>
+    </div>
+    
+    <div class="container btns">
+        <button onclick="btn('Up')">&#9650;</button>
+        <div class="container row left-right">
+            <button onclick="btn('Left')">&#9668;</button>
+            <button onclick="btn('Right')">&#9658;</button>
+        </div>
+        <button onclick="btn('Down')">&#9660;</button>
+    </div>
+
+    <script>
+        function Fruit() {
+            this.x;
+            this.y;
+
+            this.locationFruit = function() {
+                this.x = (Math.floor(Math.random() * rows - 1) + 1) * scale;
+                this.y = (Math.floor(Math.random() * columns - 1) + 1) * scale;
+            }
+
+            this.draw = function() {
+                ctx.fillStyle = "RED";
+                ctx.fillRect(this.x, this.y, scale, scale);
+            }
+        }
+    </script>
+
+    <script>
+        function Snake() {
+        this.x = 0; 
+        this.y = 0;
+        this.xVelocidade = scale * 1;
+        this.yVelocidade = 0;
+        this.total = 0;
+        this.tail = [];
+
+        this.draw = function() {
+            ctx.fillStyle = "#ffffff";
+
+            for (let i = 0; i < this.tail.length; i++) {
+                ctx.fillRect(this.tail[i].x, this.tail[i].y, scale, scale);
+            }
+
+            ctx.fillRect(this.x, this.y, scale, scale);
+        }
+
+        this.updade = function() {
+            for (let i = 0; i < this.tail.length - 1; i++) {
+                this.tail[i] = this.tail[i+1];
+            }
+
+            this.tail[this.total - 1] = { x: this.x, y:this.y };
+
+            this.x += this.xVelocidade;
+            this.y += this.yVelocidade;
+
+            if (this.x > canvas.width) {
+                this.x = 0;
+            }
+            if (this.y > canvas.height) {
+                this.y = 0;
+            }
+            if (this.x < 0) {
+                this.x = canvas.width;
+            }
+            if (this.y < 0) {
+                this.y = canvas.height;
+            }
+        }
+
+        this.changeDirection = function(direction) {
+            switch(direction) {
+                case 'Up':
+                    this.xVelocidade = 0;
+                    this.yVelocidade = -scale * 1;
+                    break;
+
+                case 'Left':
+                    this.xVelocidade = -scale * 1;
+                    this.yVelocidade = 0;
+                    break;
+
+                case 'Right':
+                    this.xVelocidade = scale * 1;
+                    this.yVelocidade = 0;
+                    break;
+
+                case 'Down':
+                    this.xVelocidade = 0;
+                    this.yVelocidade = scale * 1;
+                    break;
+                
+                default: 
+                this.xVelocidade = scale * 1;
+                this.yVelocidade = 0;
+            }
+        }
+
+        this.comer = function(fruit) {
+            if (this.x === fruit.x && this.y === fruit.y) {
+                this.total++;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        this.checkCollision = function() {
+                for (let i = 0; i < this.tail.length; i++) {
+                    if (this.x === this.tail[i].x && this.y === this.tail[i].y) {
+                        this.total = 0;
+                        this.tail = [];
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script>
+        const canvas = document.querySelector(".canvas");
+        const ctx = canvas.getContext("2d");
+        const scale = 10;
+        const rows = canvas.height / scale;
+        const columns = canvas.width / scale;
+
+        let snake;
+
+        (function setup() {
+            snake = new Snake();
+            fruit = new Fruit();
+            console.log(fruit);
+
+            fruit.locationFruit();
+
+            window.setInterval(() => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                fruit.draw();
+                snake.updade();
+                snake.draw();
+
+                if (snake.comer(fruit)) {
+                    fruit.locationFruit();
+                }
+
+                snake.checkCollision();
+                document.querySelector('.score').innerText = "score" + " " + snake.total;
+
+            }, 125);
+        }());
+
+        function btn(v) {
+            const direction = v;
+            snake.changeDirection(direction);
+        }
+
+        window.addEventListener('keydown', ((e) => {
+            const direction = e.key.replace('Arrow', '');
+            snake.changeDirection(direction);
+            console.log(direction);
+        }));
+    </script>
+
+    <script data-ad-client="ca-pub-9749684125060902" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-153427274-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-153427274-1');
+    </script>
+</body>
+</html>
